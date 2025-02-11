@@ -32,4 +32,4 @@ jobs:
             LLMapi-windows-amd64.exe
             LLMapi-darwin-amd64
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
