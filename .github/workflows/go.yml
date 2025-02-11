@@ -28,8 +28,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            myapp-linux-amd64
-            myapp-windows-amd64.exe
-            myapp-darwin-amd64
+            LLMapi-linux-amd64
+            LLMapi-windows-amd64.exe
+            LLMapi-darwin-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
