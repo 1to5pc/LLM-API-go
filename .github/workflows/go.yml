@@ -1,0 +1,35 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.6'  # Specify your Go version
+
+      - name: Build executable
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o LLMapi-linux-amd64
+          GOOS=windows GOARCH=amd64 go build -o LLMapi-windows-amd64.exe
+          GOOS=darwin GOARCH=amd64 go build -o LLMapi-darwin-amd64
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            myapp-linux-amd64
+            myapp-windows-amd64.exe
+            myapp-darwin-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
