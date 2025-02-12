@@ -18,7 +18,7 @@ jobs:
         with:
           go-version: '1.23.6'  # Specify your Go version
 
-      - name: Build executable
+      - name: Build executable for Linux
         run: |
           GOOS=linux GOARCH=amd64 go build -o LLMapi-linux-amd64
           GOOS=windows GOARCH=amd64 go build -buildmode=exe -o LLMapi-windows-amd64.exe
