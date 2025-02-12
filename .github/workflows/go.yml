@@ -21,7 +21,7 @@ jobs:
       - name: Build executable
         run: |
           GOOS=linux GOARCH=amd64 go build -o LLMapi-linux-amd64
-          GOOS=windows GOARCH=amd64 go build -o LLMapi-windows-amd64.exe
+          GOOS=windows GOARCH=amd64 go build -buildmode=exe -o LLMapi-windows-amd64.exe
           GOOS=darwin GOARCH=amd64 go build -o LLMapi-darwin-amd64
 
       - name: Create Release and Upload Assets
