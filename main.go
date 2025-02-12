@@ -13,6 +13,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/joho/godotenv"
 )
 
 type Message struct {
@@ -188,7 +189,20 @@ func (m exitMenuModel) View() string {
 
 func llmCall(modelName string, usrInput string, history []Conversation) ([]byte, error) {
 	url := "https://openrouter.ai/api/v1/chat/completions"
+
+	// Try to get API key from environment
 	apiKey := os.Getenv("OPENROUTER_API_KEY")
+
+	// If API key not found in environment, try loading from .env
+	if apiKey == "" {
+		if err := godotenv.Load(); err != nil {
+			return nil, fmt.Errorf("error loading .env file: %v", err)
+		}
+		apiKey = os.Getenv("OPENROUTER_API_KEY")
+		if apiKey == "" {
+			return nil, fmt.Errorf("OPENROUTER_API_KEY not found in environment or .env file")
+		}
+	}
 
 	// Convert conversation history to Messages format
 	messages := make([]Message, len(history)+1)
