@@ -25,11 +25,10 @@ jobs:
           GOOS=darwin GOARCH=amd64 go build -o LLMapi-darwin-amd64
 
       - name: Create Release and Upload Assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             LLMapi-linux-amd64
             LLMapi-windows-amd64.exe
             LLMapi-darwin-amd64
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
