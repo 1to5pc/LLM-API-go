@@ -10,7 +10,10 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
+	"time"
 
+	"github.com/briandowns/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/joho/godotenv"
@@ -289,6 +292,11 @@ func main() {
 
 		// Initialize conversation history
 
+		// Initialize spinner
+		s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+		s.Color("magenta")
+		s.Prefix = "Thinking... "
+
 		// Chat loop
 		scanner := bufio.NewScanner(os.Stdin)
 		for {
@@ -328,8 +336,17 @@ func main() {
 				}
 			}
 
+			// Start spinner
+			fmt.Print("\nThinking... ")
+			s.Start()
+
 			// Call LLM with history
 			response, err := llmCall(modelName, input, history)
+
+			// Stop spinner
+			s.Stop()
+			fmt.Print("\r") // Clear the spinner line
+
 			if err != nil {
 				panic(err)
 			}
@@ -356,7 +373,11 @@ func main() {
 			// Get and store the response
 			if len(result.Choices) > 0 {
 				assistantResponse := result.Choices[0].Message.Content
-				println("\nResponse:", assistantResponse)
+				if !strings.HasSuffix(assistantResponse, "\n") {
+					println("Response: " + assistantResponse)
+				} else {
+					print("Response: " + assistantResponse)
+				}
 
 				history = append(history, Conversation{
 					Role:    "assistant",
