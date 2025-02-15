@@ -2,11 +2,8 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
@@ -190,89 +187,30 @@ func (m exitMenuModel) View() string {
 	return s
 }
 
-func llmCall(modelName string, usrInput string, history []Conversation) ([]byte, error) {
-	url := "https://openrouter.ai/api/v1/chat/completions"
-
+func extractApiKey() (string, error) {
 	// Try to get API key from environment
 	apiKey := os.Getenv("OPENROUTER_API_KEY")
 
 	// If API key not found in environment, try loading from .env
 	if apiKey == "" {
 		if err := godotenv.Load(); err != nil {
-			return nil, fmt.Errorf("error loading .env file: %v", err)
+			return "", fmt.Errorf("error loading .env file: %v", err)
 		}
 		apiKey = os.Getenv("OPENROUTER_API_KEY")
 		if apiKey == "" {
-			return nil, fmt.Errorf("OPENROUTER_API_KEY not found in environment or .env file")
+			return "", fmt.Errorf("OPENROUTER_API_KEY not found in environment or .env file")
 		}
 	}
-
-	// Convert conversation history to Messages format
-	messages := make([]Message, len(history)+1)
-	for i, conv := range history {
-		messages[i] = Message{
-			Role: conv.Role,
-			Content: []Content{
-				{
-					Type: "text",
-					Text: conv.Content,
-				},
-			},
-		}
-	}
-
-	// Add current user input
-	messages = append(messages, Message{
-		Role: "user",
-		Content: []Content{
-			{
-				Type: "text",
-				Text: usrInput,
-			},
-		},
-	})
-
-	// Create the request body
-	reqBody := RequestBody{
-		Model:    modelName,
-		Messages: messages,
-	}
-
-	// Convert request body to JSON
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create the request
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, err
-	}
-
-	// Add headers
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	// Make the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// Read the response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
+	return apiKey, nil
 }
 
 func main() {
 	history := make([]Conversation, 0)
+	apiKey, err := extractApiKey()
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
 	for {
 		// Run the Bubble Tea program for model selection
 		p := tea.NewProgram(initialModel())
@@ -341,7 +279,7 @@ func main() {
 			s.Start()
 
 			// Call LLM with history
-			response, err := llmCall(modelName, input, history)
+			response, err := LlmCall(modelName, input, history, apiKey)
 
 			// Stop spinner
 			s.Stop()
