@@ -3,10 +3,11 @@ module llm-api-go
 go 1.24
 
 require (
+	github.com/briandowns/spinner v1.23.2
 	github.com/charmbracelet/bubbletea v1.3.2
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/joho/godotenv v1.5.1
-	github.com/briandowns/spinner v1.23.2
+	golang.org/x/term v0.29.0
 )
 
 require (
@@ -26,6 +27,5 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/term v0.1.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
